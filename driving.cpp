@@ -49,9 +49,11 @@ void BasicDriver::Run() {
   if (move_type_ == kGoForward) {
     ///高橋
     char str[264];
-    sprintf(str, "x: %d y: %d \n", counts_r_, counts_l_);
-    syslog(LOG_NOTICE, str);
+    //sprintf(str, "x: %d y: %d \n", counts_r_, counts_l_);
+    //syslog(LOG_NOTICE, str);
+      sprintf(str, "%d, %d\n", counts_r_[count], counts_l_[count]);
     ///
+    count += 1;
     power_l = power_r = base_power_;
   } else if (move_type_ == kGoBackward) {
     power_l = power_r = -base_power_;
