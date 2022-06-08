@@ -48,7 +48,7 @@ void BasicDriver::Run() {
 
   if (move_type_ == kGoForward) {
     ///高橋
-    printf("%d,%d",counts_l_,counts_r_);
+    //printf("%d,%d",counts_l_,counts_r_);
     ///
     power_l = power_r = base_power_;
   } else if (move_type_ == kGoBackward) {

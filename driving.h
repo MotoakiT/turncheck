@@ -5,7 +5,6 @@
 #include "etrc_info.h"
 #include "utils.h"
 ///高橋
-#include "device_io.h"
 ///
 
 class WheelsControl {
