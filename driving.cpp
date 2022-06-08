@@ -52,8 +52,8 @@ void BasicDriver::Run() {
     //counts_rs
     char str[264];
     //sprintf(str, "x: %d y: %d \n", counts_r_, counts_l_);
-      syslog(LOG_NOTICE, str);
       sprintf(str, "%d, %d\n", counts_r_, counts_l_);
+      syslog(LOG_NOTICE, str);
     ///
     count += 1;
     power_l = power_r = base_power_;
