@@ -23,6 +23,11 @@ class BasicDriver {
   void Stop();
 
  private:
+  ///高橋
+  MotorIo* motor_io_;
+  int32_t counts_rs[100000] = {};
+  int32_t counts_ls[100000] = {};
+  ///
   WheelsControl* wheels_control_;
   Move move_type_;
   int8_t base_power_;
