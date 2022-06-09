@@ -79,24 +79,41 @@ Localize::Localize(MotorIo* motor_io)
 }
 
 void Localize::Update() {
-  double Ll = R * motor_io_->counts_l_ * M_PI / 180;
-  double Lr = R * motor_io_->counts_r_ * M_PI / 180;
+  int32_t counts_r_ = motor_io_->counts_r_;
+  int32_t counts_l_ = motor_io_->counts_l_;
 
-  double theta = (Lr - Ll) / D;
-  theta_wa += theta;
+  // if(counts_l_ > 50 && counts_r_ > 50) {
+  //   counts_l_=0;
+  //   counts_r_=0;
+  // }
+
+  curr_index += 1;
+  counts_rs[curr_index] = counts_r_;
+  counts_ls[curr_index] = counts_l_;
+
+  double Ll = R * (counts_ls[curr_index] - counts_ls[curr_index - 1]) * M_PI / 180;
+  double Lr = R * (counts_rs[curr_index] - counts_rs[curr_index - 1]) * M_PI / 180;
+
+  double micro_theta = (Lr - Ll) / D;
+  theta_wa += micro_theta;
+  theta = theta_wa;
   double A = (Lr + Ll) / 2 * (1 - 0);
-  double dx = A * cos(theta_wa + theta / 2);
-  double dy = A * sin(theta_wa + theta / 2);
+  double dx = A * cos(theta_wa + micro_theta / 2);
+  double dy = A * sin(theta_wa + micro_theta / 2);
   double dd = sqrt(dx * dx + dy * dy);
 
-  // x += dx;
-  // y += dy;
+  x += dx;
+  y += dy;
   distance_ += dd;
+
+  char str[264];
+  //sprintf(str, "x: %f y: %f distance: %f\n", x, y, distance_);
+  //syslog(LOG_NOTICE, str);
 }
 
 void Localize::SaveOdometri() {
   char str [256];
-  FILE* fp = fopen("Odome.csv", "w");
+  FILE* fp = fopen("Odome_motoaki.csv", "w");
 
   for (int i=0; i<curr_index; i++) {
     sprintf(str, "%d, %d\n", counts_ls[i], counts_rs[i]);

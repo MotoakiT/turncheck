@@ -52,15 +52,21 @@ void BasicDriver::Run() {
 
   if (move_type_ == kGoForward) {
     ///高橋
-    //counts_ls[count] = counts
-    //counts_rs
-    char str[264];
-    //sprintf(str, "x: %d y: %d \n", counts_r_, counts_l_);
-      sprintf(str, "%d, %d\n", counts_r_, counts_l_);
-      syslog(LOG_NOTICE, str);
+    if(const_power == 0 && variable_power == 0){
+      const_power = base_power_;
+      variable_power = base_power_;
+    }
+
+    if(counts_r_ - counts_l_ <= 10 && counts_r_ - counts_l_ >= -10){
+    }else if(counts_r_ - counts_l_ > 10){
+      variable_power += 1;
+    }else{
+      variable_power -= 1;
+    }
+
+    power_l = variable_power;
+    power_r = const_power;
     ///
-    count += 1;
-    power_l = power_r = base_power_;
   } else if (move_type_ == kGoBackward) {
     power_l = power_r = -base_power_;
   } else if (move_type_ == kRotateLeft) {
@@ -74,11 +80,37 @@ void BasicDriver::Run() {
   }
 
   wheels_control_->Exec(power_l, power_r);
+
+  ///check the log
+  char str[264];
+  sprintf(str, "r-l: %d || rp: %d lp: %d \n", counts_r_ - counts_l_, power_r, power_l);
+  syslog(LOG_NOTICE, str);
+  ///
+
+  ///writing to csv
+  counts_rs[basepower_index] = power_l;
+  counts_ls[basepower_index] = power_r;
+  basepower_index += 1;
+  ///
 }
 
 void BasicDriver::Stop() {
   wheels_control_->Exec(0, 0);
 }
+
+///高橋
+void BasicDriver::SaveBasePower(){
+  char str [256];
+  FILE* fp = fopen("BasePower_motoaki.csv", "w");
+
+  for (int i=0; i<basepower_index; i++) {
+    sprintf(str, "%d, %d\n", counts_ls[i], counts_rs[i]);
+    fprintf(fp, str);
+  }
+
+  fclose(fp);
+}
+///
 
 LineTracer::LineTracer(WheelsControl* wheels_control, Luminous* luminous)
     : wheels_control_(wheels_control), luminous_(luminous),

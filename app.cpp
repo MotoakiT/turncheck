@@ -81,7 +81,12 @@ void main_task(intptr_t unused) {
     if (sensor_io->touch_sensor_pressed_) break;
     tslp_tsk(100*1000U);
   }
+  
+  ///CSV書き込み
   localize->SaveOdometri();
+  basic_driver->SaveBasePower();
+
+  ///モーターストップ
   motor_io->Rotate();
 
   stp_cyc(EXEC_ACTION_CYC);
@@ -91,6 +96,7 @@ void main_task(intptr_t unused) {
 }
 
 void exec_action_task(intptr_t unused) {
+  localize->Update();
   state_manager->Update();
   ext_tsk();
 }

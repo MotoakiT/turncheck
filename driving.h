@@ -27,12 +27,17 @@ class BasicDriver {
   void SetParam(Move move_type, int8_t base_power);
   void Run();
   void Stop();
+  ///高橋
+  void SaveBasePower();
+  ///
 
  private:
   ///高橋
   int32_t counts_rs[100000] = {};
   int32_t counts_ls[100000] = {};
-  int count = 0;
+  int basepower_index = 0;
+  int const_power = 0;
+  int variable_power = 0;
   ///
   WheelsControl* wheels_control_;
   Move move_type_;
