@@ -93,3 +93,15 @@ void Localize::Update() {
   // y += dy;
   distance_ += dd;
 }
+
+void Localize::SaveOdometri() {
+  char str [256];
+  FILE* fp = fopen("Odome.csv", "w");
+
+  for (int i=0; i<curr_index; i++) {
+    sprintf(str, "%d, %d\n", counts_ls[i], counts_rs[i]);
+    fprintf(fp, str);
+  }
+
+  fclose(fp);
+}

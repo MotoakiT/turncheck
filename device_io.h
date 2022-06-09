@@ -10,8 +10,8 @@ class MotorIo {
   void Update();
   void SetWheelsPower(int8_t power_l, int8_t power_r);
   void StopWheels(bool brake);
+  void Rotate();
   void TestRun();
-  void TurnLeft();
 
   int32_t counts_l_;
   int32_t counts_r_;

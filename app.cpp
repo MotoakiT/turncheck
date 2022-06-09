@@ -80,6 +80,8 @@ void main_task(intptr_t unused) {
     if (sensor_io->touch_sensor_pressed_) break;
     tslp_tsk(100*1000U);
   }
+  localize->SaveOdometri();
+  motor_io->Rotate();
 
   stp_cyc(EXEC_ACTION_CYC);
   stp_cyc(UPDATE_INFO_CYC);
