@@ -4,6 +4,10 @@ WheelsControl::WheelsControl(MotorIo* motor_io) : motor_io_(motor_io) {
 }
 
 void WheelsControl::Exec(int8_t target_power_l, int8_t target_power_r) {
+  ///高橋
+  counts_r_ = motor_io_->counts_r_;
+  counts_l_ = motor_io_->counts_l_;
+  ///
   int8_t curr_power_l = motor_io_->power_l_;
   if (target_power_l > curr_power_l) {
     curr_power_l += 1;
@@ -42,8 +46,8 @@ void BasicDriver::Run() {
   int8_t power_l;
   int8_t power_r;
   ///高橋
-  int32_t counts_r_ = motor_io_->counts_r_;
-  int32_t counts_l_ = motor_io_->counts_l_;
+  int32_t counts_r_ = wheels_control_ -> counts_r_;
+  int32_t counts_l_ = wheels_control_ -> counts_l_;
   ///
 
   if (move_type_ == kGoForward) {

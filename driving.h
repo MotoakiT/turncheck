@@ -11,6 +11,10 @@ class WheelsControl {
  public:
   WheelsControl(MotorIo* motor_io);
   void Exec(int8_t target_power_l, int8_t target_power_r);
+/// 高橋
+ public:
+  int32_t counts_r_;
+  int32_t counts_l_;  
 
  private:
   MotorIo* motor_io_;
@@ -26,7 +30,6 @@ class BasicDriver {
 
  private:
   ///高橋
-  MotorIo* motor_io_;
   int32_t counts_rs[100000] = {};
   int32_t counts_ls[100000] = {};
   int count = 0;
