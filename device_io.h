@@ -12,6 +12,7 @@ class MotorIo {
   void StopWheels(bool brake);
   void Rotate();
   void TestRun();
+  void SaveRunTime();
 
   int32_t counts_l_;
   int32_t counts_r_;

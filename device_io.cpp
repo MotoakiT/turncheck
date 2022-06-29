@@ -60,6 +60,10 @@ void MotorIo::TestRun() {
   ev3_motor_set_power(EV3_PORT_B, right_power);
 }
 
+void MotorIo::SaveRunTime(){
+  
+}
+
 SensorIo::SensorIo()
     : touch_sensor_pressed_(false), back_button_pressed_(false), color_rgb_raw_({0, 0, 0}) {
   ev3_sensor_config(EV3_PORT_1, TOUCH_SENSOR);
