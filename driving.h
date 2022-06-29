@@ -33,23 +33,11 @@ class BasicDriver {
 
  private:
   ///高橋
-  int32_t error_now_[100000] = {};
-  int32_t angle_l[100000] = {};
-  int32_t angle_r[100000] = {};
+  float error_now_r_[100000] = {};
+  float now_apt_r_[100000] = {};
+  float power_r_[100000] = {};
+  int now_angle_r_[100000] = {};
   int basepower_index = 0;
-  int const_power = 0;
-  int const_angle = 0;
-  int variable_power = 0;
-  int variable_angle = 0;
-  float variable_power_f; 
-  float error_before;
-  int error_now = 0;
-  float cumulative_error = 0.0;
-  float differential_error;
-  float Kp;
-  float Ki;
-  float Kd;
-  float DELRA_T = 0.001;
   ///
   WheelsControl* wheels_control_;
   Move move_type_;

@@ -46,56 +46,11 @@ void BasicDriver::SetParam(Move move_type, int8_t base_power) {
 void BasicDriver::Run() {
   int8_t power_l;
   int8_t power_r;
-  ///高橋
   int32_t counts_r_ = wheels_control_ -> counts_r_;
   int32_t counts_l_ = wheels_control_ -> counts_l_;
-  ///
 
   if (move_type_ == kGoForward) {
-    ///高橋
-    ///どっちのタイヤに合わせるか
-    const_angle = counts_r_;
-    variable_angle = counts_l_;
-    ///
-    const_power = base_power_;
-    error_before = error_now;
-    if (const_angle - variable_angle - error_before > 20){
-    }else{
-      error_now =  const_angle - variable_angle;
-    }
-    cumulative_error += error_now * DELRA_T;
-    differential_error += (error_now - error_before) / DELRA_T;
-    Kp = 0.5;
-    Ki = 0.0;
-    Kd = 0.001;
-    
-    variable_power_f = Kp * error_now + Ki * cumulative_error + Kd * differential_error + base_power_;
-    
-    variable_power = variable_power_f;
-    if(variable_power_f - variable_power >= 0.5){
-      variable_power += 1;
-    }
-
-    ///最大値、最小値の設定
-    if(variable_power >= 100){
-      variable_power = 100;
-    }else if(variable_power <= 30){
-      variable_power = 30;
-    }
-    ///
-
- //      if(counts_r_ - counts_l_ <= 10 && counts_r_ - counts_l_ >= -10){
- //      }else if(counts_r_ - counts_l_ > 10 && variable_power <= 100){
- //        variable_power += 1;
- //      }else if(variable_power > 50){
- //        variable_power -= 1;
- //      }
- //    }
-    
-
-    power_r = const_power;
-    power_l = variable_power;
-    ///
+    power_l = power_r = base_power_;
   } else if (move_type_ == kGoBackward) {
     power_l = power_r = -base_power_;
   } else if (move_type_ == kRotateLeft) {
@@ -110,19 +65,11 @@ void BasicDriver::Run() {
 
   wheels_control_->Exec(power_l, power_r);
 
-  ///check the log
-  //char str[264];
-  //sprintf(str, "error: %d || rp: %d lp: %d \n", error_now, power_r, power_l);
-  //syslog(LOG_NOTICE, str);
-  ///
-
-  ///writing to csv
-  error_now_[basepower_index] = error_now;
-  angle_r[basepower_index] = counts_r_;
-  angle_l[basepower_index] = counts_l_;
-  //counts_ls[basepower_index] = power_r;
+  //error_now_r_[basepower_index] = error_now_r;
+  //now_apt_r_[basepower_index] = now_apt_r;
+  //power_r_[basepower_index] = power_r_f;
+  now_angle_r_[basepower_index] = counts_r_;
   basepower_index += 1;
-  ///
 }
 
 void BasicDriver::Stop() {
@@ -134,8 +81,9 @@ void BasicDriver::SaveBasePower(){
   char str [256];
   FILE* fp = fopen("error_motoaki.csv", "w");
 
-  for (int i=0; i<basepower_index; i++) {
-    sprintf(str, "%d\n", error_now_[i]);
+  for (int i=0; i < basepower_index;  i++) {
+    //sprintf(str, "%d,%f,%f,%d\n", power_r_[i],now_apt_r_[i],error_now_r_[i],now_angle_r_[i]);
+    sprintf(str, "%d\n", now_angle_r_[i]);
     fprintf(fp, str);
   }
 

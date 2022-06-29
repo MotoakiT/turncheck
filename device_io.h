@@ -2,6 +2,7 @@
 #define ETRC22_DEVICE_IO_H_
 
 #include "ev3api.h"
+#include "time.h"
 
 class MotorIo {
  public:
@@ -12,6 +13,7 @@ class MotorIo {
   void StopWheels(bool brake);
   void Rotate();
   void TestRun();
+  void SaveRunTime();
 
   int32_t counts_l_;
   int32_t counts_r_;
@@ -20,6 +22,12 @@ class MotorIo {
 
  private:
   void ResetCounts();
+  struct timespec now_time;
+  int curr_index = 0;
+  unsigned long secs_st[100000] = {};
+  unsigned long secs_ed[100000] = {};
+  int32_t angle_l[100000]={};
+  int32_t angle_r[100000]={};
 };
 
 class SensorIo {
