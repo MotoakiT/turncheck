@@ -46,8 +46,9 @@ class SensorIo {
   int curr_index = 0;
   unsigned long secs_st[100000] = {};
   unsigned long secs_ed[100000] = {};
-  int32_t angle_l[100000]={};
-  int32_t angle_r[100000]={};
+  int32_t sensor_r_raw[100000]={};
+  int32_t sensor_g_raw[100000]={};
+  int32_t sensor_b_raw[100000]={};
 };
 
 class Camera {
