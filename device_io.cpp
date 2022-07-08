@@ -1,4 +1,8 @@
 #include "device_io.h"
+#include <time.h>
+
+//a
+
 
 MotorIo::MotorIo() : counts_l_(0), counts_r_(0) {
   ev3_motor_config(EV3_PORT_A, LARGE_MOTOR);
@@ -12,10 +16,32 @@ MotorIo::~MotorIo() {
 }
 
 void MotorIo::Update() {
+
+  ///測定
+  unsigned long nsec_st;
+  clock_gettime(CLOCK_REALTIME, &now_time);
+  nsec_st = now_time.tv_nsec;
+  secs_st[curr_index] = nsec_st;
+
+  ///値の取得
   counts_l_ = ev3_motor_get_counts(EV3_PORT_C);
   counts_r_ = ev3_motor_get_counts(EV3_PORT_B);
   power_l_ = static_cast<int8_t>(ev3_motor_get_power(EV3_PORT_C));
   power_r_ = static_cast<int8_t>(ev3_motor_get_power(EV3_PORT_B));
+
+  ///測定
+  unsigned long nsec_ed;
+  clock_gettime(CLOCK_REALTIME, &now_time);
+  nsec_ed = now_time.tv_nsec;
+  secs_ed[curr_index] = nsec_ed;
+
+  char str [256];
+  angle_l[curr_index] = counts_l_;
+  angle_r[curr_index] = counts_r_;
+  curr_index += 1;
+
+  //sprintf(str, "%d,%d\n",counts_l_,angle_l[curr_index - 1]);
+  //syslog(LOG_NOTICE, str);
 }
 
 void MotorIo::SetWheelsPower(int8_t power_l, int8_t power_r) {
@@ -61,7 +87,21 @@ void MotorIo::TestRun() {
 }
 
 void MotorIo::SaveRunTime(){
+  char str [256];
+  FILE* fp = fopen("motoaki_saveruntime.csv", "w");
+  for (int i=0; i<curr_index; i++) {
+    sprintf(str, "%u,%u,%d,%d\n",secs_st[i],secs_ed[i],angle_l[i],angle_r[i]);
+    fprintf(fp, str);
+  }
   
+  //char str [256];
+  //FILE* fp = fopen("motoaki_sss.csv", "w");
+  //for (int i=0; i<curr_index; i++) {
+  //  sprintf(str, "%d\n",angle_l[i] );
+  //  fprintf(fp, str);
+  //}
+  //sprintf(str, "%d\n",angle_l[50]);
+  //syslog(LOG_NOTICE, str);
 }
 
 SensorIo::SensorIo()
@@ -74,8 +114,39 @@ SensorIo::~SensorIo() {
 }
 
 void SensorIo::Update() {
+  ///測定
+  unsigned long nsec_st;
+  clock_gettime(CLOCK_REALTIME, &now_time);
+  nsec_st = now_time.tv_nsec;
+  secs_st[curr_index] = nsec_st;
+
+  //センサー値の取得
   touch_sensor_pressed_ = ev3_touch_sensor_is_pressed(EV3_PORT_1);
   ev3_color_sensor_get_rgb_raw(EV3_PORT_2, &color_rgb_raw_);
+
+  ///測定
+  unsigned long nsec_st;
+  clock_gettime(CLOCK_REALTIME, &now_time);
+  nsec_st = now_time.tv_nsec;
+  secs_st[curr_index] = nsec_st;
+
+  char str [256];
+  sensor_r_raw[curr_index] = color_rgb_raw_.r;
+  sensor_g_raw[curr_index] = color_rgb_raw_.g;
+  sensor_b_raw[curr_index] = color_rgb_raw_.b;
+  curr_index += 1;
+
+  sprintf(str, "%d,%d,%d\n",sensor_r_raw[curr_index - 1],sensor_g_raw[curr_index-1],sensor_b_raw[curr_index-1]);
+  syslog(LOG_NOTICE, str);
+}
+
+SensorIo::SaveRunTime(){
+  char str [256];
+  FILE* fp = fopen("motoaki_saveruntime_sensor.csv", "w");
+  for (int i=0; i<curr_index; i++) {
+    sprintf(str, "%d,%d,%d\n",sensor_r_raw[i],sensor_g_raw[i],sensor_b_raw[i]);
+    fprintf(fp, str);
+  }
 }
 
 Camera::Camera() {

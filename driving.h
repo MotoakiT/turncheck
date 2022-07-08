@@ -33,11 +33,11 @@ class BasicDriver {
 
  private:
   ///高橋
-  int32_t counts_rs[100000] = {};
-  int32_t counts_ls[100000] = {};
+  float error_now_r_[100000] = {};
+  float now_apt_r_[100000] = {};
+  float power_r_[100000] = {};
+  int now_angle_r_[100000] = {};
   int basepower_index = 0;
-  int const_power = 0;
-  int variable_power = 0;
   ///
   WheelsControl* wheels_control_;
   Move move_type_;

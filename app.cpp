@@ -83,8 +83,9 @@ void main_task(intptr_t unused) {
   }
   
   ///CSV書き込み
-  localize->SaveOdometri();
-  basic_driver->SaveBasePower();
+  //localize->SaveOdometri();
+  //basic_driver->SaveBasePower();
+  motor_io->SaveRunTime();
 
   ///モーターストップ
   motor_io->Rotate();

@@ -2,6 +2,7 @@
 #define ETRC22_DEVICE_IO_H_
 
 #include "ev3api.h"
+#include "time.h"
 
 class MotorIo {
  public:
@@ -21,6 +22,12 @@ class MotorIo {
 
  private:
   void ResetCounts();
+  struct timespec now_time;
+  int curr_index = 0;
+  unsigned long secs_st[100000] = {};
+  unsigned long secs_ed[100000] = {};
+  int32_t angle_l[100000]={};
+  int32_t angle_r[100000]={};
 };
 
 class SensorIo {
@@ -28,10 +35,19 @@ class SensorIo {
   SensorIo();
   ~SensorIo();
   void Update();
+  void SaveRunTime();
 
   bool touch_sensor_pressed_;
   bool back_button_pressed_;
   rgb_raw_t color_rgb_raw_;
+
+ private:
+  struct timespec now_time;
+  int curr_index = 0;
+  unsigned long secs_st[100000] = {};
+  unsigned long secs_ed[100000] = {};
+  int32_t angle_l[100000]={};
+  int32_t angle_r[100000]={};
 };
 
 class Camera {
