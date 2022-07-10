@@ -118,14 +118,14 @@ void SensorIo::Update() {
 
 }
 
-SensorIo::SaveRunTime(){
-  char str [256];
-  FILE* fp = fopen("motoaki_saveruntime_sensor.csv", "w");
-  for (int i=0; i<curr_index; i++) {
-    sprintf(str, "%d,%d,%d\n",sensor_r_raw[i],sensor_g_raw[i],sensor_b_raw[i]);
-    fprintf(fp, str);
-  }
-}
+// SensorIo::SaveRunTime(){
+//   char str [256];
+//   FILE* fp = fopen("motoaki_saveruntime_sensor.csv", "w");
+//   for (int i=0; i<curr_index; i++) {
+//     sprintf(str, "%d,%d,%d\n",sensor_r_raw[i],sensor_g_raw[i],sensor_b_raw[i]);
+//     fprintf(fp, str);
+//   }
+// }
 
 Camera::Camera() {
 

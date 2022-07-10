@@ -11,9 +11,9 @@ extern "C" {
 #define STACK_SIZE 4096
 #endif
 
-#define EXEC_ACTION_DT_MS 50
-#define UPDATE_INFO_DT_MS 50
-#define SOLVE_BINGO_DT_MS 50
+#define EXEC_ACTION_DT_MS 40
+#define UPDATE_INFO_DT_MS 40
+#define SOLVE_BINGO_DT_MS 40
 #define TASK_INTERVAL_DT_MS 10
 #define START_INTERVAL_DT_MS 500
 
