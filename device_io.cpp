@@ -18,10 +18,10 @@ MotorIo::~MotorIo() {
 void MotorIo::Update() {
 
   ///測定
-  unsigned long nsec_st;
-  clock_gettime(CLOCK_REALTIME, &now_time);
-  nsec_st = now_time.tv_nsec;
-  secs_st[curr_index] = nsec_st;
+  // unsigned long nsec_st;
+  // clock_gettime(CLOCK_REALTIME, &now_time);
+  // nsec_st = now_time.tv_nsec;
+  // secs_st[curr_index] = nsec_st;
 
   ///値の取得
   counts_l_ = ev3_motor_get_counts(EV3_PORT_C);
@@ -30,18 +30,15 @@ void MotorIo::Update() {
   power_r_ = static_cast<int8_t>(ev3_motor_get_power(EV3_PORT_B));
 
   ///測定
-  unsigned long nsec_ed;
-  clock_gettime(CLOCK_REALTIME, &now_time);
-  nsec_ed = now_time.tv_nsec;
-  secs_ed[curr_index] = nsec_ed;
+  // unsigned long nsec_ed;
+  // clock_gettime(CLOCK_REALTIME, &now_time);
+  // nsec_ed = now_time.tv_nsec;
+  // secs_ed[curr_index] = nsec_ed;
 
   char str [256];
   angle_l[curr_index] = counts_l_;
   angle_r[curr_index] = counts_r_;
   curr_index += 1;
-
-  //sprintf(str, "%d,%d\n",counts_l_,angle_l[curr_index - 1]);
-  //syslog(LOG_NOTICE, str);
 }
 
 void MotorIo::SetWheelsPower(int8_t power_l, int8_t power_r) {
@@ -114,30 +111,11 @@ SensorIo::~SensorIo() {
 }
 
 void SensorIo::Update() {
-  ///測定
-  unsigned long nsec_st;
-  clock_gettime(CLOCK_REALTIME, &now_time);
-  nsec_st = now_time.tv_nsec;
-  secs_st[curr_index] = nsec_st;
 
   //センサー値の取得
   touch_sensor_pressed_ = ev3_touch_sensor_is_pressed(EV3_PORT_1);
   ev3_color_sensor_get_rgb_raw(EV3_PORT_2, &color_rgb_raw_);
 
-  ///測定
-  unsigned long nsec_st;
-  clock_gettime(CLOCK_REALTIME, &now_time);
-  nsec_st = now_time.tv_nsec;
-  secs_st[curr_index] = nsec_st;
-
-  char str [256];
-  sensor_r_raw[curr_index] = color_rgb_raw_.r;
-  sensor_g_raw[curr_index] = color_rgb_raw_.g;
-  sensor_b_raw[curr_index] = color_rgb_raw_.b;
-  curr_index += 1;
-
-  sprintf(str, "%d,%d,%d\n",sensor_r_raw[curr_index - 1],sensor_g_raw[curr_index-1],sensor_b_raw[curr_index-1]);
-  syslog(LOG_NOTICE, str);
 }
 
 SensorIo::SaveRunTime(){
