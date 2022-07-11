@@ -38,6 +38,7 @@ class BasicDriver {
   float now_apt_r_[100000] = {};
   float power_r_[100000] = {};
   int now_angle_r_[100000] = {};
+  float low_pass[2][10000] = {};
   int now_angle_l_[100000] = {};
   int angle_least_squares[2][5] = {};
   float time_index[5] = {0.0,0.04,0.08,0.12,0.16};

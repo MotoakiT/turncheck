@@ -65,9 +65,9 @@ void BasicDriver::Run() {
         angle_least_squares[1][i] = 0.0;
       }
     }else{
-       for(int i = 0;i < 5;i ++){
-       angle_least_squares[0][i] = now_angle_l_[basepower_index -4 + i];
-       angle_least_squares[1][i] = now_angle_r_[basepower_index -4 + i];
+        for(int i = 0;i < 5;i ++){
+        angle_least_squares[0][i] = now_angle_l_[basepower_index - 4 + i];
+        angle_least_squares[1][i] = now_angle_r_[basepower_index - 4 + i];
         }
       }
 
