@@ -40,25 +40,24 @@ class BasicDriver {
   int now_angle_r_[100000] = {};
   int now_angle_l_[100000] = {};
   int angle_least_squares[2][5] = {};
-  double time_index[5] = {0.0,0.04,0.08,0.12,0.16};
+  float time_index[5] = {0.0,0.04,0.08,0.12,0.16};
   int basepower_index = 0;
-  double Sx[2] = {};
-  double Sxy[2] = {};
-  double x_abe_l = 0;
-  double x_abe_r = 0;
-  double y_abe = 0;
-  float speed_r = 0;
-  float speed_l = 0;
+  float Sx = 0;
+  float Sxy[2] = {};
+  float y_abe_l = 0;
+  float y_abe_r = 0;
+  float x_abe = 0;
 
-  double Kp[2] = {};
-  double Ki[2] = {};
-  double Kd[2] = {};
 
-  double error_interal[2] = {}; 
-  double error_differential[2] = {};
-  double delta_t_pid = 0.04;
+  float Kp[2] = {};
+  float Ki[2] = {};
+  float Kd[2] = {};
+
+  float error_interal[2] = {}; 
+  float error_differential[2] = {};
+  float delta_t_pid = 0.04;
   
-  double motor_power_pid[2] = {};
+  float motor_power_pid[2] = {};
   float target_value_speed = 0.0;
   float now_speed_l[100000] = {};
   float now_speed_r[100000] = {};

@@ -46,11 +46,10 @@ void BasicDriver::SetParam(Move move_type, int8_t base_power) {
 void BasicDriver::Run() {
   Sxy[0] = 0;
   Sxy[1] = 0;
-  Sx[0] = 0;
-  Sx[1] = 0;
-  x_abe_l = 0;
-  x_abe_r = 0;
-  y_abe = 0;
+  Sx = 0;
+  y_abe_l = 0;
+  y_abe_r = 0;
+  x_abe = 0;
   int8_t power_l;
   int8_t power_r;
   int32_t counts_r_ = wheels_control_ -> counts_r_;
@@ -59,55 +58,47 @@ void BasicDriver::Run() {
   now_angle_l_[basepower_index] = counts_l_;
 
   if (move_type_ == kGoForward) {
-    target_value_speed = 100;
+    target_value_speed = 600;
     if(basepower_index < 5){
-      for(int i = 0;i < basepower_index + 1;i ++){
+      for(int i = 0;i < 5;i ++){
         angle_least_squares[0][i] = 0.0;
         angle_least_squares[1][i] = 0.0;
       }
     }else{
        for(int i = 0;i < 5;i ++){
-       angle_least_squares[0][i] = now_angle_r_[basepower_index -4 + i];
-       angle_least_squares[1][i] = now_angle_l_[basepower_index -4 + i];
+       angle_least_squares[0][i] = now_angle_l_[basepower_index -4 + i];
+       angle_least_squares[1][i] = now_angle_r_[basepower_index -4 + i];
         }
       }
 
     for(int i=0; i<5; i++){
-      x_abe_l += angle_least_squares[0][i];
-      x_abe_r += angle_least_squares[1][i];
-      y_abe += time_index[i];
+      y_abe_l += angle_least_squares[0][i];
+      y_abe_r += angle_least_squares[1][i];
+      x_abe += time_index[i];
       }
 
-      x_abe_l = x_abe_l/5;
-      x_abe_r = x_abe_r/5;
-      y_abe = y_abe/5;
+      y_abe_l = y_abe_l/5;
+      y_abe_r = y_abe_r/5;
+      x_abe = x_abe/5;
 
     for(int i=0; i<5; i++){
-      Sxy[0] += (angle_least_squares[0][i] - x_abe_l)*(time_index[i] - y_abe);
-      Sxy[1] += (angle_least_squares[1][i] - x_abe_r)*(time_index[i] - y_abe);
-
-      Sx[0] += (angle_least_squares[0][i] - x_abe_l)*(angle_least_squares[0][i] - x_abe_l);
-      Sx[1] += (angle_least_squares[1][i] - x_abe_r)*(angle_least_squares[1][i] - x_abe_r);
+      Sxy[0] += (angle_least_squares[0][i] - y_abe_l)*(time_index[i] - x_abe);
+      Sxy[1] += (angle_least_squares[1][i] - y_abe_r)*(time_index[i] - x_abe);
+      Sx += (time_index[i] - x_abe)*(time_index[i] - x_abe);
       }
+
       Sxy[0] /= 5;
       Sxy[1] /= 5;
-      Sx[0] /= 5;
-      Sx[1] /= 5;
-      printf("Sxy[0] = %f\n",Sxy[0]);
-      printf("Sx[0] = %f\n",Sx[0]);
-      printf("x_abe_l =%f\n",x_abe_l);
-      printf("y_abe = %f\n",y_abe);
-    
-    if(Sx[0] != 0 && Sxy[0] != 0){
-      speed_l = Sxy[0]/((Sx[0])*(Sx[0]));
-      now_speed_l[basepower_index] = speed_l;
+      Sx /= 5;
+
+    if(Sx != 0){
+      now_speed_l[basepower_index] = Sxy[0]/Sx;
     }else{
       now_speed_l[basepower_index] = 0;
     }
 
-    if(Sx[1] != 0 ){
-      speed_r = Sxy[1]/((Sx[1])*(Sx[1]));
-      now_speed_r[basepower_index] = speed_r;
+    if(Sx != 0){
+      now_speed_r[basepower_index] = Sxy[1]/Sx;
     }else{
       now_speed_r[basepower_index] = 0;
     }
@@ -120,7 +111,7 @@ void BasicDriver::Run() {
     error_differential[0] = (error_now[0][basepower_index] - error_now[0][basepower_index - 1])/delta_t_pid;
     error_differential[1] = (error_now[1][basepower_index] - error_now[1][basepower_index - 1])/delta_t_pid;
 
-    Kp[0] = 0.5;
+    Kp[0] = 0.8;
     Kp[1] = 0.8;
     Ki[0] = 0.0;
     Ki[1] = 0.0;
@@ -130,18 +121,20 @@ void BasicDriver::Run() {
     motor_power_pid[0] = Kp[0]*error_now[0][basepower_index] + error_interal[0]*Ki[0] + error_differential[0]*Kd[0];
     motor_power_pid[1] = Kp[1]*error_now[1][basepower_index] + error_interal[1]*Ki[1] + error_differential[1]*Kd[1];
 
-    power_l = (int)motor_power_pid[0];
-    if(power_l >100){
+    if(motor_power_pid[0] >100){
       power_l = 100;
-    }else if(power_l < 0){
+    }else if(motor_power_pid[0] < 0){
       power_l = 0;
+    }else{
+      power_l = (int)motor_power_pid[0];
     }
 
-    power_r = (int)motor_power_pid[1];
-    if(power_r >100){
+    if(motor_power_pid[1] >100){
       power_r = 100;
-    }else if(power_r < 0){
+    }else if(motor_power_pid[1] < 0){
       power_r = 0;
+    }else{
+      power_r = (int)motor_power_pid[1];
     }
   } else if (move_type_ == kGoBackward) {
     power_l = power_r = -base_power_;
@@ -156,6 +149,9 @@ void BasicDriver::Run() {
   }
   power_index[0][basepower_index] = power_r;
   power_index[1][basepower_index] = power_l;
+  
+  power_l = 75;
+  power_r = 75;
 
   wheels_control_->Exec(power_l, power_r);
   basepower_index += 1;
@@ -169,9 +165,10 @@ void BasicDriver::Stop() {
 void BasicDriver::SaveBasePower(){
   char str [256];
   FILE* fp = fopen("error_motoaki.csv", "w");
-
-  for (int i=0; i < basepower_index;  i++) {
-    sprintf(str, "%f , %f, %d, %d\n",now_speed_l[i],now_speed_r[i],power_index[0][i],power_index[1][i]);
+  sprintf(str, "deg_l ,deg_r ,speed_l, speed_r, power_index_l, power_index_r\n");
+  fprintf(fp, str);
+  for (int i = 0; i < basepower_index;  i++) {
+    sprintf(str, "%d, %d ,%f , %f, %d, %d\n",now_angle_r_[i],now_angle_l_[i],now_speed_l[i],now_speed_r[i],power_index[0][i],power_index[1][i]);
     fprintf(fp, str);
   }
 
