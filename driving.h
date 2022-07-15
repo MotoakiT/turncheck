@@ -41,7 +41,7 @@ class BasicDriver {
   float low_pass[2][10000] = {};
   int now_angle_l_[100000] = {};
   int angle_least_squares[2][5] = {};
-  float time_index[5] = {0.0,0.04,0.08,0.12,0.16};
+  float time_index[5] = {0.0,0.05,0.10,0.15,0.20};
   int basepower_index = 0;
   float Sx = 0;
   float Sxy[2] = {};
@@ -62,6 +62,11 @@ class BasicDriver {
   float target_value_speed = 0.0;
   float now_speed_l[100000] = {};
   float now_speed_r[100000] = {};
+
+  int update_info_ms = 0;
+  int periodic_function_ms = 0;
+  int amplitude = 0;
+
   ///
   WheelsControl* wheels_control_;
   Move move_type_;

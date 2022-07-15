@@ -1,5 +1,5 @@
 #include "driving.h"
-
+#include "math.h"
 
 WheelsControl::WheelsControl(MotorIo* motor_io) : motor_io_(motor_io) {
 }
@@ -44,16 +44,17 @@ void BasicDriver::SetParam(Move move_type, int8_t base_power) {
 }
 
 void BasicDriver::Run() {
+  int8_t power_l;
+  int8_t power_r;
+  int32_t counts_r_ = wheels_control_ -> counts_r_;
+  int32_t counts_l_ = wheels_control_ -> counts_l_;
+  /*
   Sxy[0] = 0;
   Sxy[1] = 0;
   Sx = 0;
   y_abe_l = 0;
   y_abe_r = 0;
   x_abe = 0;
-  int8_t power_l;
-  int8_t power_r;
-  int32_t counts_r_ = wheels_control_ -> counts_r_;
-  int32_t counts_l_ = wheels_control_ -> counts_l_;
   now_angle_r_[basepower_index] = counts_r_;
   now_angle_l_[basepower_index] = counts_l_;
 
@@ -149,10 +150,13 @@ void BasicDriver::Run() {
   }
   power_index[0][basepower_index] = power_r;
   power_index[1][basepower_index] = power_l;
-  
-  power_l = 75;
-  power_r = 75;
+  */
+  update_info_ms = 50;
+  periodic_function_ms = 6000;
+  amplitude = 20;
 
+  power_l = base_power_ + amplitude * (int)sin(M_PI * (update_info_ms / periodic_function_ms) * basepower_index);
+  power_r = base_power_ + amplitude * (int)sin(M_PI * (update_info_ms / periodic_function_ms) * basepower_index);
   wheels_control_->Exec(power_l, power_r);
   basepower_index += 1;
 }
