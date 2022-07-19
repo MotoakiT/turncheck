@@ -50,7 +50,7 @@ void BasicDriver::Run() {
   int32_t counts_l_ = wheels_control_ -> counts_l_;
   now_angle_r_[basepower_index] = counts_r_;
   now_angle_l_[basepower_index] = counts_l_;
-  /*
+  
   Sxy[0] = 0;
   Sxy[1] = 0;
   Sx = 0;
@@ -148,15 +148,7 @@ void BasicDriver::Run() {
   } else {
     power_l = power_r = 0;
   }
-  */
-  update_info_ms = 50;
-  periodic_function_ms = 6000;
-  amplitude = 25;
-
-  power_l = base_power_ + (int)(amplitude * sin(M_PI * (2 * update_info_ms / periodic_function_ms) * basepower_index));
-  power_r = base_power_ + (int)(amplitude * sin(M_PI * (2 * update_info_ms / periodic_function_ms) * basepower_index));
-  power_index[0][basepower_index] = power_r;
-  power_index[1][basepower_index] = power_l;
+  
   wheels_control_->Exec(power_l, power_r);
   basepower_index += 1;
 }
