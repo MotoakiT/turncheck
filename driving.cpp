@@ -48,6 +48,8 @@ void BasicDriver::Run() {
   int8_t power_r;
   int32_t counts_r_ = wheels_control_ -> counts_r_;
   int32_t counts_l_ = wheels_control_ -> counts_l_;
+  now_angle_r_[basepower_index] = counts_r_;
+  now_angle_l_[basepower_index] = counts_l_;
   /*
   Sxy[0] = 0;
   Sxy[1] = 0;
@@ -55,8 +57,6 @@ void BasicDriver::Run() {
   y_abe_l = 0;
   y_abe_r = 0;
   x_abe = 0;
-  now_angle_r_[basepower_index] = counts_r_;
-  now_angle_l_[basepower_index] = counts_l_;
 
   if (move_type_ == kGoForward) {
     target_value_speed = 600;
@@ -148,15 +148,15 @@ void BasicDriver::Run() {
   } else {
     power_l = power_r = 0;
   }
-  power_index[0][basepower_index] = power_r;
-  power_index[1][basepower_index] = power_l;
   */
   update_info_ms = 50;
   periodic_function_ms = 6000;
-  amplitude = 20;
+  amplitude = 25;
 
-  power_l = base_power_ + amplitude * (int)sin(M_PI * (update_info_ms / periodic_function_ms) * basepower_index);
-  power_r = base_power_ + amplitude * (int)sin(M_PI * (update_info_ms / periodic_function_ms) * basepower_index);
+  power_l = base_power_ + (int)(amplitude * sin(M_PI * (2 * update_info_ms / periodic_function_ms) * basepower_index));
+  power_r = base_power_ + (int)(amplitude * sin(M_PI * (2 * update_info_ms / periodic_function_ms) * basepower_index));
+  power_index[0][basepower_index] = power_r;
+  power_index[1][basepower_index] = power_l;
   wheels_control_->Exec(power_l, power_r);
   basepower_index += 1;
 }
@@ -172,7 +172,7 @@ void BasicDriver::SaveBasePower(){
   sprintf(str, "deg_l ,deg_r ,speed_l, speed_r, power_index_l, power_index_r\n");
   fprintf(fp, str);
   for (int i = 0; i < basepower_index;  i++) {
-    sprintf(str, "%d, %d ,%f , %f, %d, %d\n",now_angle_r_[i],now_angle_l_[i],now_speed_l[i],now_speed_r[i],power_index[0][i],power_index[1][i]);
+    sprintf(str, "%d, %d, %d, %d\n",now_angle_l_[i],now_angle_r_[i],power_index[0][i],power_index[1][i]);
     fprintf(fp, str);
   }
 

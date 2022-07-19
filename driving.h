@@ -63,9 +63,9 @@ class BasicDriver {
   float now_speed_l[100000] = {};
   float now_speed_r[100000] = {};
 
-  int update_info_ms = 0;
-  int periodic_function_ms = 0;
-  int amplitude = 0;
+  float update_info_ms = 0;
+  float periodic_function_ms = 0;
+  float amplitude = 0;
 
   ///
   WheelsControl* wheels_control_;
