@@ -56,7 +56,13 @@ void BasicDriver::Run() {
   color_index[1][basepower_index] = color_rgb_raw_[1];
   color_index[2][basepower_index] = color_rgb_raw_[2];
 
-  int run = 40
+///45
+  //int run = 20
+///90
+  //int run = 40
+///180
+  //int run = 80
+  
   int intarval = 20;
   if(basepower_index % (run + intarval) <= 40){
   power_l = -base_power_;
