@@ -1,13 +1,14 @@
 #include "driving.h"
 #include "math.h"
 
-WheelsControl::WheelsControl(MotorIo* motor_io) : motor_io_(motor_io) {
+WheelsControl::WheelsControl(MotorIo* motor_io) : motor_io_(motor_io),sensor_io_(motor_io) {
 }
 
 void WheelsControl::Exec(int8_t target_power_l, int8_t target_power_r) {
   ///高橋
   counts_r_ = motor_io_->counts_r_;
   counts_l_ = motor_io_->counts_l_;
+  color_rgb_raw_ = sensor_io->color_rgb_raw_;
   ///
   int8_t curr_power_l = motor_io_->power_l_;
   if (target_power_l > curr_power_l) {
@@ -48,107 +49,23 @@ void BasicDriver::Run() {
   int8_t power_r;
   int32_t counts_r_ = wheels_control_ -> counts_r_;
   int32_t counts_l_ = wheels_control_ -> counts_l_;
-  now_angle_r_[basepower_index] = counts_r_;
-  now_angle_l_[basepower_index] = counts_l_;
-  
-  Sxy[0] = 0;
-  Sxy[1] = 0;
-  Sx = 0;
-  y_abe_l = 0;
-  y_abe_r = 0;
-  x_abe = 0;
+  rgb_raw_t color_rgb_raw_ = wheels_control_->color_rgb_raw_;
+  now_angle[0][basepower_index] = counts_l_;
+  now_angle[1][basepower_index] = counts_r_;
+  color_index[0][basepower_index] = color_rgb_raw_[0];
+  color_index[1][basepower_index] = color_rgb_raw_[1];
+  color_index[2][basepower_index] = color_rgb_raw_[2];
 
-  if (move_type_ == kGoForward) {
-    target_value_speed = 600;
-    if(basepower_index < 5){
-      for(int i = 0;i < 5;i ++){
-        angle_least_squares[0][i] = 0.0;
-        angle_least_squares[1][i] = 0.0;
-      }
-    }else{
-        for(int i = 0;i < 5;i ++){
-        angle_least_squares[0][i] = now_angle_l_[basepower_index - 4 + i];
-        angle_least_squares[1][i] = now_angle_r_[basepower_index - 4 + i];
-        }
-      }
-
-    for(int i=0; i<5; i++){
-      y_abe_l += angle_least_squares[0][i];
-      y_abe_r += angle_least_squares[1][i];
-      x_abe += time_index[i];
-      }
-
-      y_abe_l = y_abe_l/5;
-      y_abe_r = y_abe_r/5;
-      x_abe = x_abe/5;
-
-    for(int i=0; i<5; i++){
-      Sxy[0] += (angle_least_squares[0][i] - y_abe_l)*(time_index[i] - x_abe);
-      Sxy[1] += (angle_least_squares[1][i] - y_abe_r)*(time_index[i] - x_abe);
-      Sx += (time_index[i] - x_abe)*(time_index[i] - x_abe);
-      }
-
-      Sxy[0] /= 5;
-      Sxy[1] /= 5;
-      Sx /= 5;
-
-    if(Sx != 0){
-      now_speed_l[basepower_index] = Sxy[0]/Sx;
-    }else{
-      now_speed_l[basepower_index] = 0;
-    }
-
-    if(Sx != 0){
-      now_speed_r[basepower_index] = Sxy[1]/Sx;
-    }else{
-      now_speed_r[basepower_index] = 0;
-    }
-
-
-    error_now[0][basepower_index] = target_value_speed - now_speed_l[basepower_index];
-    error_now[1][basepower_index] = target_value_speed - now_speed_r[basepower_index];
-    error_interal[0] += (error_now[0][basepower_index] + error_now[0][basepower_index])/(2*delta_t_pid);
-    error_interal[1] += (error_now[1][basepower_index] + error_now[1][basepower_index])/(2*delta_t_pid);
-    error_differential[0] = (error_now[0][basepower_index] - error_now[0][basepower_index - 1])/delta_t_pid;
-    error_differential[1] = (error_now[1][basepower_index] - error_now[1][basepower_index - 1])/delta_t_pid;
-
-    Kp[0] = 0.8;
-    Kp[1] = 0.8;
-    Ki[0] = 0.0;
-    Ki[1] = 0.0;
-    Kd[0] = 0.0;
-    Kd[1] = 0.0;
-
-    motor_power_pid[0] = Kp[0]*error_now[0][basepower_index] + error_interal[0]*Ki[0] + error_differential[0]*Kd[0];
-    motor_power_pid[1] = Kp[1]*error_now[1][basepower_index] + error_interal[1]*Ki[1] + error_differential[1]*Kd[1];
-
-    if(motor_power_pid[0] >100){
-      power_l = 100;
-    }else if(motor_power_pid[0] < 0){
-      power_l = 0;
-    }else{
-      power_l = (int)motor_power_pid[0];
-    }
-
-    if(motor_power_pid[1] >100){
-      power_r = 100;
-    }else if(motor_power_pid[1] < 0){
-      power_r = 0;
-    }else{
-      power_r = (int)motor_power_pid[1];
-    }
-  } else if (move_type_ == kGoBackward) {
-    power_l = power_r = -base_power_;
-  } else if (move_type_ == kRotateLeft) {
-    power_l = -base_power_;
-    power_r = base_power_;
-  } else if (move_type_ == kRotateRight) {
-    power_l = base_power_;
-    power_r = -base_power_;
-  } else {
-    power_l = power_r = 0;
+  int run = 40
+  int intarval = 20;
+  if(basepower_index % (run + intarval) <= 40){
+  power_l = -base_power_;
+  power_r = base_power_;
+  }else{
+  power_l = 0;
+  power_r = 0;
   }
-  
+
   wheels_control_->Exec(power_l, power_r);
   basepower_index += 1;
 }
@@ -161,10 +78,10 @@ void BasicDriver::Stop() {
 void BasicDriver::SaveBasePower(){
   char str [256];
   FILE* fp = fopen("error_motoaki.csv", "w");
-  sprintf(str, "deg_l ,deg_r ,speed_l, speed_r, power_index_l, power_index_r\n");
+  sprintf(str, "counts_r, counts_l, r, g, b\n");
   fprintf(fp, str);
   for (int i = 0; i < basepower_index;  i++) {
-    sprintf(str, "%d, %d, %d, %d\n",now_angle_l_[i],now_angle_r_[i],power_index[0][i],power_index[1][i]);
+    sprintf(str, "%d, %d, %d, %d\n",now_angle[0][i],now_angle[1][i],color_index[0][i],color_index[1][i],color_index[2][i]);
     fprintf(fp, str);
   }
 

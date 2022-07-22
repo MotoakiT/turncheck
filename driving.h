@@ -9,15 +9,17 @@
 
 class WheelsControl {
  public:
-  WheelsControl(MotorIo* motor_io);
+  WheelsControl(MotorIo* motor_io,SensorIo* sensor_io_);
   void Exec(int8_t target_power_l, int8_t target_power_r);
 /// 高橋
  public:
   int32_t counts_r_;
   int32_t counts_l_;  
+  rgb_raw_t color_rgb_raw_;
 
  private:
   MotorIo* motor_io_;
+  SensorIo* sensor_io_;
 };
 
 class BasicDriver {
@@ -33,42 +35,13 @@ class BasicDriver {
 
  private:
   ///高橋
-  float error_now[2][100000] = {};
-  int power_index[2][100000] = {};
-  float now_apt_r_[100000] = {};
-  float power_r_[100000] = {};
-  int now_angle_r_[100000] = {};
-  float low_pass[2][10000] = {};
-  int now_angle_l_[100000] = {};
-  int angle_least_squares[2][5] = {};
-  float time_index[5] = {0.0,0.05,0.10,0.15,0.20};
+  int now_angle[2][100000] = {};
+  int color_index[3][100000] = {};
   int basepower_index = 0;
-  float Sx = 0;
-  float Sxy[2] = {};
-  float y_abe_l = 0;
-  float y_abe_r = 0;
-  float x_abe = 0;
-
-
-  float Kp[2] = {};
-  float Ki[2] = {};
-  float Kd[2] = {};
-
-  float error_interal[2] = {}; 
-  float error_differential[2] = {};
-  float delta_t_pid = 0.04;
-  
-  float motor_power_pid[2] = {};
-  float target_value_speed = 0.0;
-  float now_speed_l[100000] = {};
-  float now_speed_r[100000] = {};
-
-  float update_info_ms = 0;
-  float periodic_function_ms = 0;
-  float amplitude = 0;
-
+  float const_pid[2][3] = {};
   ///
   WheelsControl* wheels_control_;
+  WheelsControlColor* wheels_control_color_;
   Move move_type_;
   int8_t base_power_;
 };
